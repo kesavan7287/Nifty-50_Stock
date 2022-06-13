@@ -7,16 +7,17 @@ import streamlit as st
 
 st.set_page_config(page_title="Nifty50 Dashboard", page_icon=":bar_chart:", layout="wide")
 
-meta = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\stock_metadata - stock_metadata.csv")
-meta2 = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\Nifty50 Average.csv")
-meta3 = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\stockmeta2.csv")
+meta = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/stock_metadata%20-%20stock_metadata.csv")
+meta2 = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/Nifty50%20Average.csv")
+meta3 = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/stockmeta2.csv")
 
-nifty_auto = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY AUTO.csv",parse_dates=["Date"], index_col="Date")
-nifty_bank = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY BANK.csv",parse_dates=["Date"], index_col="Date")
-nifty_fmcg = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY FMCG.csv",parse_dates=["Date"], index_col="Date")
-nifty_IT = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY IT.csv",parse_dates=["Date"], index_col="Date")
-nifty_metal = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY METAL.csv",parse_dates=["Date"], index_col="Date")
-nifty_pharma = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY PHARMA.csv",parse_dates=["Date"], index_col="Date")
+nifty_auto = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/NIFTY%20AUTO.csv",parse_dates=["Date"], index_col="Date")
+nifty_bank = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/NIFTY%20BANK.csv",parse_dates=["Date"], index_col="Date")
+nifty_fmcg = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/NIFTY%20FMCG.csv",parse_dates=["Date"], index_col="Date")
+nifty_IT = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/NIFTY%20IT.csv",parse_dates=["Date"], index_col="Date")
+nifty_metal = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/NIFTY%20METAL.csv",parse_dates=["Date"], index_col="Date")
+nifty_pharma = pd.read_csv(r"https://raw.githubusercontent.com/C0uldY0uN0t/Nifty-50_Stock/main/NIFTY%20PHARMA.csv",parse_dates=["Date"], index_col="Date")
+
 
 nifty_auto.interpolate(method='time', inplace=True)
 nifty_bank.interpolate(method='time', inplace=True)
