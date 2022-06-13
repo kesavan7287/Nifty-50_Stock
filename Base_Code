@@ -1,0 +1,171 @@
+import pandas as pd
+import plotly.express as px
+import plotly.figure_factory as ff
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import streamlit as st
+
+st.set_page_config(page_title="Nifty50 Dashboard", page_icon=":bar_chart:", layout="wide")
+
+meta = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\stock_metadata - stock_metadata.csv")
+meta2 = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\Nifty50 Average.csv")
+meta3 = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\stockmeta2.csv")
+
+nifty_auto = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY AUTO.csv",parse_dates=["Date"], index_col="Date")
+nifty_bank = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY BANK.csv",parse_dates=["Date"], index_col="Date")
+nifty_fmcg = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY FMCG.csv",parse_dates=["Date"], index_col="Date")
+nifty_IT = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY IT.csv",parse_dates=["Date"], index_col="Date")
+nifty_metal = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY METAL.csv",parse_dates=["Date"], index_col="Date")
+nifty_pharma = pd.read_csv(r"C:\Users\jashb\OneDrive\Desktop\Nifty 50 data\NIFTY PHARMA.csv",parse_dates=["Date"], index_col="Date")
+
+nifty_auto.interpolate(method='time', inplace=True)
+nifty_bank.interpolate(method='time', inplace=True)
+nifty_fmcg.interpolate(method='time', inplace=True)
+nifty_IT.interpolate(method='time', inplace=True)
+nifty_metal.interpolate(method='time', inplace=True)
+nifty_pharma.interpolate(method='time', inplace=True)
+
+nifty_df = pd.DataFrame({
+    'NIFTY Auto index': nifty_auto['Close']['2020':].values, 
+    'NIFTY Bank index': nifty_bank['Close']['2020':].values,
+    'NIFTY FMCG index': nifty_fmcg['Close']['2020':].values,
+    'NIFTY IT index': nifty_IT['Close']['2020':].values,
+    'NIFTY Metal index': nifty_metal['Close']['2020':].values,
+    'NIFTY Pharma index': nifty_pharma['Close']['2020':].values,
+})
+
+
+
+
+st.sidebar.header("Please Choose Here:")
+Industry = st.sidebar.selectbox(
+    "Select the Industry here",
+    options = meta['Industry'].unique()
+)
+meta_selection = meta.query(
+    "Industry == @Industry"
+)
+Company = st.sidebar.selectbox(
+    "Select the Company Name",
+    options = meta_selection['Company Name']
+)
+
+st.title(":bar_chart: Nifty 50 Stocks Price Dashboard")
+
+
+data = meta['Industry']
+
+fig = px.pie(data, meta['Industry'])
+st.header("Nifty 50 Weightage")
+st.plotly_chart(fig)
+
+nifty_fig = px.box(nifty_df)
+st.header("Nifty Sector Indices")
+st.plotly_chart(nifty_fig)
+
+fig_candle_main = go.Figure(
+        data=[go.Candlestick(
+            x=meta2['Date'],
+            open=meta2['Open'],
+            high=meta2['High'],
+            low=meta2['Low'],
+            close=meta2['Close']
+            )
+        ]
+    )
+st.header("Nifty50 Index")
+st.plotly_chart(fig_candle_main)
+
+filename1 = []
+var1 = meta3[meta3['Industry'] == Industry]['File Location']
+for i in var1.values:
+    filename1 = i
+    df1 = pd.read_csv(filename1)
+    df1.set_index('Date',inplace=True)
+
+    fig_candle_sub = go.Figure(
+        data=[go.Candlestick(
+            x=df1.index,
+            open=df1['Open'],
+            high=df1['High'],
+            low=df1['Low'],
+            close=df1['Close']
+            )
+        ]
+    )
+    
+    st.header("Nifty "+ Industry + " Index")
+    st.plotly_chart(fig_candle_sub)
+  
+
+
+filename = []
+var = meta_selection[meta['Company Name'] == Company]['File Location']
+for i in var.values:
+    filename = i
+    df = pd.read_csv(filename)
+    df.set_index('Date',inplace=True)
+
+    df = df.dropna(axis='columns')
+    df = df.drop(columns = ['Symbol','Series','Prev Close'])
+    df.describe()
+
+    st.header(Company)
+    st.dataframe(df)
+    st.dataframe(df.describe())
+    
+    hist_data = [df['VWAP']]
+    group_labels = ['Volume Weighted Average Price'] 
+    fig_histplot = ff.create_distplot(hist_data, group_labels)
+
+    fig_candle = go.Figure(
+        data=[go.Candlestick(
+            x=df.index,
+            open=df['Open'],
+            high=df['High'],
+            low=df['Low'],
+            close=df['Close']
+            )
+        ]
+    )
+
+    fig = make_subplots(rows=4, cols=1,
+    subplot_titles=("Opening Price", "Closing Price", "Highest price", "Lowest Price"))
+
+    fig.append_trace(go.Scatter(
+        x=df.index,
+        y=df['Open'],
+        name = 'Open'
+    ), row=1, col=1)
+
+    fig.append_trace(go.Scatter(
+        x=df.index,
+        y=df['Close'],
+        name = 'Close'
+    ), row=2, col=1)
+
+    fig.append_trace(go.Scatter(
+        x=df.index,
+        y=df['High'],
+        name = 'High'
+    ), row=3, col=1)
+
+    fig.append_trace(go.Scatter(
+        x=df.index,
+        y=df['Low'],
+        name = 'Low'
+    ), row=4, col=1)
+
+
+    fig.update_layout(height=1200, width=800)
+    
+    st.header("VWAP(Volume Weighted Average Price) over time")
+    st.plotly_chart(fig_histplot)
+
+    st.header("Daily Values")
+    st.plotly_chart(fig_candle)
+
+    st.header("Stock Price Daily Variation")
+    st.plotly_chart(fig)
+    
+    
